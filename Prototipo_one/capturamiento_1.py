@@ -5,10 +5,10 @@ import numpy as np
 import time
 
 
-nombre = 'W_Gesto'
+nombre = 'Y_Gesto'
 direccion_entrenamiento = 'proyecto/DATA/pro_1/Entrenamiento'
 direccion_validacion = 'proyecto/DATA/pro_1/Validacion'
-
+#deteccion de dedos ocultos puede ocurrir variaciones en la deteccion en la letras m y n 
 carpeta_entrenamiento = os.path.join(direccion_entrenamiento, nombre)
 carpeta_validacion = os.path.join(direccion_validacion, nombre)
 os.makedirs(carpeta_entrenamiento, exist_ok=True)
@@ -17,10 +17,10 @@ os.makedirs(carpeta_validacion, exist_ok=True)
 #CORREGIR LA N, AGREGAR MÁS DATOS CENTRADO CON LA LETRA U, IMPLEMNTAR LA LETRA Y
 cont_entrenamiento = 0
 cont_validacion = 0
-total_datos = 300  
-porcentaje_validacion = 0.2  #para validación
-WRIST = 0
-MIDDLE_FINGER_MCP = 9 # Metacarpophalangeal joint of the middle finger
+total_datos = 300 
+porcentaje_validacion = 0.1  #para validación cambiar a 0.2 cuando se agrega por primera vez y si no es la primera 0.1
+WRIST = 0 # punto cero que seria muneca 
+MIDDLE_FINGER_MCP = 9 # Metacarpophalangeal dedo del medio 
 
 
 
@@ -36,9 +36,14 @@ last_capture_time = time.time()
 
 def normalizar_landmarks(landmarks, image_shape):
     """
-    Normaliza landmarks para ser invariantes a la traslación (posición)
-    y a la escala (tamaño/distancia). Usa la muñeca como origen y la 
-    distancia muñeca-base_dedo_medio como factor de escala.
+    Normaliza landmarks para que la distancia y lugar de la mano no importe cuando se normalize quede casi los mismos numero auqnue la diferencia de
+    para que despues de la resta de la muneca como pi′​=pi​−p p0 coordenadas de la muenca
+    pi' landmark trasladado 
+    la normalizacion por escala
+    para esti se ocupara la base del dedo del medio el punto 9,la d'9 = raiz((x,2)9,(y,2)9,(z,2)9)  que seria raziz de la suma de x,y,z elevados al cuadrado 
+    
+    todos los landmarks se dividiran por d que seria el resultado de la ecuacion 
+    
     """
     if not landmarks or not landmarks.landmark:
         return np.zeros(21 * 3) 
@@ -55,10 +60,10 @@ def normalizar_landmarks(landmarks, image_shape):
     # Ahora el landmark WRIST tiene coordenadas [0, 0, 0] en 'landmarks_relative'
     
     # normalizacion por excala 
-    # Calcular la distancia entre la muñeca (ahora en 0,0,0) y la base del dedo medio
+    # Calcular la distancia entre la muñeca (ahora en 0,0,0) y la base del dedo medio que seria obtener las coordenadas del landmark 9
     middle_finger_mcp_coords = landmarks_relative[MIDDLE_FINGER_MCP]
     
-    # Distancia Euclidiana desde el origen (0,0,0)
+    # Distancia Euclidiana desde el origen (0,0,0) la funcion euclidiana es la raiz de la suma de x,y,z elevado al cuadrado
     scale_factor = np.linalg.norm(middle_finger_mcp_coords) 
     
     # Evitar división por cero si la mano está en una pose extraña o muy cerca/lejos
@@ -66,7 +71,7 @@ def normalizar_landmarks(landmarks, image_shape):
 
          return np.zeros(21 * 3)
 
-    # Dividir todas las coordenadas relativas por el factor de escala
+    # Dividir todas las coordenadas relativas por el factor de escala que seria el resultado obtenido anterior
     landmarks_normalized = landmarks_relative / scale_factor
 
     return landmarks_normalized.flatten()
