@@ -7,9 +7,8 @@ from tensorflow.keras.models import Sequential, Model
 import os
 import matplotlib.pyplot as plt
 
-# --- Configuración ---
-# Rutas a tus carpetas de datos
-direccion_base = 'proyecto/DATA/pro_1'
+
+direccion_base = 'proyecto/DATA/pro_2'
 direccion_entrenamiento = os.path.join(direccion_base, 'Entrenamiento')
 direccion_validacion = os.path.join(direccion_base, 'Validacion')
 
@@ -18,10 +17,10 @@ IMG_HEIGHT = 224
 IMG_WIDTH = 224
 IMG_CHANNELS = 3 # MobileNetV2 espera 3 canales (color)
 
-# Parámetros de entrenamiento
+
 BATCH_SIZE = 32
-EPOCHS = 20 # Puedes ajustar esto. Con early stopping, puede parar antes.
-LEARNING_RATE = 0.0001 # Tasa de aprendizaje inicial (puede ser más baja para transfer learning)
+EPOCHS = 20 
+LEARNING_RATE = 0.0001 
 
 # Ruta para guardar el modelo entrenado
 modelo_guardar_ruta = 'modelo_lenguaje_senas.keras' # Nuevo formato recomendado .keras

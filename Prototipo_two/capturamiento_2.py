@@ -6,8 +6,8 @@ import time
 
 
 nombre = 'A_Gesto'
-direccion_entrenamiento = 'proyecto/DATA/pro_1/Entrenamiento'
-direccion_validacion = 'proyecto/DATA/pro_1/Validacion'
+direccion_entrenamiento = 'proyecto/DATA/pro_2/Entrenamiento'
+direccion_validacion = 'proyecto/DATA/pro_2/Validacion'
 
 carpeta_entrenamiento = os.path.join(direccion_entrenamiento, nombre)
 carpeta_validacion = os.path.join(direccion_validacion, nombre)

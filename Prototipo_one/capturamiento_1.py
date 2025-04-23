@@ -5,7 +5,7 @@ import numpy as np
 import time
 
 
-nombre = 'M_Gesto'
+nombre = 'W_Gesto'
 direccion_entrenamiento = 'proyecto/DATA/pro_1/Entrenamiento'
 direccion_validacion = 'proyecto/DATA/pro_1/Validacion'
 
@@ -13,8 +13,8 @@ carpeta_entrenamiento = os.path.join(direccion_entrenamiento, nombre)
 carpeta_validacion = os.path.join(direccion_validacion, nombre)
 os.makedirs(carpeta_entrenamiento, exist_ok=True)
 os.makedirs(carpeta_validacion, exist_ok=True)
-#j-k-
-
+#j-k-enie-Q-X-Z
+#CORREGIR LA N, AGREGAR MÁS DATOS CENTRADO CON LA LETRA U, IMPLEMNTAR LA LETRA Y
 cont_entrenamiento = 0
 cont_validacion = 0
 total_datos = 300  
@@ -49,7 +49,7 @@ def normalizar_landmarks(landmarks, image_shape):
     landmarks_array = np.array([[lm.x, lm.y, lm.z] for lm in landmarks_list]) 
     
     # normalizacion por traslacion
-    # Usar la muñeca (índice WRIST) como punto de referencia
+    # Usar la muñeca (índice WRIST) como punto de referencia restar a todos los demas el punto de referencia
     reference_point = landmarks_array[WRIST]
     landmarks_relative = landmarks_array - reference_point 
     # Ahora el landmark WRIST tiene coordenadas [0, 0, 0] en 'landmarks_relative'

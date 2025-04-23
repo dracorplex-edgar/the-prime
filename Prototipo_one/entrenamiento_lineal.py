@@ -19,7 +19,7 @@ os.makedirs(MODEL_DIR, exist_ok=True)  # Crear directorio si no existe
 gestos = os.listdir(os.path.join(DATA_PATH, 'Entrenamiento'))
 NUM_CLASSES = len(gestos)
 
-EPOCHS = 120
+EPOCHS = 200
 BATCH_SIZE = 16
 INPUT_SHAPE = (63,)  # 21 landmarks * 3 coordenadas
 
