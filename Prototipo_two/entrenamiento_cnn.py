@@ -12,22 +12,19 @@ direccion_base = 'proyecto/DATA/pro_2'
 direccion_entrenamiento = os.path.join(direccion_base, 'Entrenamiento')
 direccion_validacion = os.path.join(direccion_base, 'Validacion')
 
-# Tamaño de las imágenes para la entrada del modelo (MobileNetV2 espera 224x224 por defecto)
 IMG_HEIGHT = 224
 IMG_WIDTH = 224
-IMG_CHANNELS = 3 # MobileNetV2 espera 3 canales (color)
+IMG_CHANNELS = 3 # MobileNetV2 espera 3 canales que serian
 
 
 BATCH_SIZE = 32
 EPOCHS = 20 
 LEARNING_RATE = 0.0001 
 
-# Ruta para guardar el modelo entrenado
-modelo_guardar_ruta = 'modelo_lenguaje_senas.keras' # Nuevo formato recomendado .keras
 
-# --- Cargar Datos ---
-print("Cargando datos de entrenamiento...")
-# image_dataset_from_directory infiere las clases de los nombres de las carpetas
+modelo_guardar_ruta = 'proyecto/src/Prototipo_two/modelo2/modelo_lenguaje_senas.keras' 
+
+
 train_ds = image_dataset_from_directory(
     directory=direccion_entrenamiento,
     labels='inferred',
@@ -35,10 +32,9 @@ train_ds = image_dataset_from_directory(
     image_size=(IMG_HEIGHT, IMG_WIDTH),
     interpolation='nearest', # Método de redimensionamiento
     batch_size=BATCH_SIZE,
-    shuffle=True # Mezclar datos de entrenamiento
+    shuffle=True # si se quiere mezclar datos ponle true es mejor
 )
 
-print("Cargando datos de validación...")
 val_ds = image_dataset_from_directory(
     directory=direccion_validacion,
     labels='inferred',
@@ -46,33 +42,25 @@ val_ds = image_dataset_from_directory(
     image_size=(IMG_HEIGHT, IMG_WIDTH),
     interpolation='nearest',
     batch_size=BATCH_SIZE,
-    shuffle=False # No es necesario mezclar datos de validación
+    shuffle=False # en validacion no por que son los datos con los que se validan
 )
 
-# Obtener el nombre de las clases (nombres de las carpetas) y el número de clases
 class_names = train_ds.class_names
 num_classes = len(class_names)
 print(f"Clases detectadas: {class_names}")
 print(f"Número de clases: {num_classes}")
 
-# --- Preparación de Datos y Aumento de Datos ---
-
-# MobileNetV2 espera que los píxeles estén en el rango [-1, 1].
-# keras.applications.mobilenet_v2.preprocess_input hace esta normalización.
-# Sin embargo, image_dataset_from_directory ya escala a [0, 255] por defecto.
-# Podemos agregar una capa de rescaling o usar la función preprocess_input
-# directamente después del aumento de datos.
-# Una capa de Reescalado a [0, 1] es un buen primer paso general:
+# Una capa de Reescalado a [0, 1] es algo necesario 
 rescale = keras.layers.Rescaling(1./255)
 
-# Capas de Aumento de Datos (elige las apropiadas para gestos)
-# ¡Precaución con RandomFlip! Si un gesto es el reflejo de otro (ej: B y D en ASL),
-# NO uses RandomFlip('horizontal'). Para señas generales, puede ser útil.
+
+# la funcion de RandomFlip no cupar si un gesto es el reflejo de otro (hasta ahorita no hay ningun problema con esto asi que todo bien )
+
 data_augmentation = Sequential([
   RandomRotation(factor=0.1),      # Rotación aleatoria ligera
   RandomZoom(height_factor=0.1, width_factor=0.1), # Zoom aleatorio ligero
   RandomTranslation(height_factor=0.1, width_factor=0.1), # Traslación aleatoria ligera
-  # RandomFlip("horizontal"), # Descomenta con precaución si es aplicable
+  #RandomFlip("horizontal"), # comenta si resulta mal "acuerdate primero sin esto y prueba denuevo "
 ], name="data_augmentation")
 
 
@@ -97,9 +85,6 @@ val_ds = val_ds.map(lambda x, y: (rescale(x), y)) # Solo reescalar validación
 AUTOTUNE = tf.data.AUTOTUNE
 train_ds = train_ds.cache().prefetch(buffer_size=AUTOTUNE)
 val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
-
-
-# --- Construir el Modelo con Transfer Learning ---
 
 # Cargar el modelo base MobileNetV2 pre-entrenado en ImageNet
 # include_top=False quita la capa de clasificación final
@@ -140,9 +125,6 @@ model.compile(optimizer=keras.optimizers.Adam(learning_rate=LEARNING_RATE),
 # Mostrar el resumen del modelo
 model.summary()
 
-
-# --- Callbacks (Para controlar el entrenamiento) ---
-
 # Callback para guardar el mejor modelo basado en la precisión de validación
 checkpoint_callback = keras.callbacks.ModelCheckpoint(
     filepath=modelo_guardar_ruta,
@@ -152,10 +134,10 @@ checkpoint_callback = keras.callbacks.ModelCheckpoint(
     verbose=1
 )
 
-# Callback para detener el entrenamiento si la precisión de validación no mejora
+# Callback para detener el entrenamiento si no hay mejora o se queda en punto muerto
 early_stopping_callback = keras.callbacks.EarlyStopping(
     monitor='val_accuracy',
-    patience=5, # Número de épocas sin mejora para detener
+    patience=5, # alas 5 epocas iguales detener entrenamiento
     mode='max',
     verbose=1,
     restore_best_weights=True # Restaurar los pesos del mejor epoch
@@ -165,7 +147,7 @@ early_stopping_callback = keras.callbacks.EarlyStopping(
 callbacks_list = [checkpoint_callback, early_stopping_callback]
 
 
-# --- Entrenar el Modelo ---
+
 print("Comenzando entrenamiento...")
 history = model.fit(
     train_ds,
@@ -200,9 +182,8 @@ plt.legend(loc='upper right')
 plt.title('Pérdida de Entrenamiento y Validación')
 plt.show()
 
-# --- Evaluación Final ---
 print("\nEvaluando el mejor modelo en el conjunto de validación:")
-best_model = keras.models.load_model(modelo_guardar_ruta) # Cargar el mejor modelo guardado
+best_model = keras.models.load_model(modelo_guardar_ruta) 
 loss, accuracy = best_model.evaluate(val_ds)
 print(f"Pérdida en validación: {loss:.4f}")
 print(f"Precisión en validación: {accuracy:.4f}")

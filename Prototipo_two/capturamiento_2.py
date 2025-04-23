@@ -1,5 +1,5 @@
 import cv2
-import mediapipe as mp
+import mediapipe as mp #solo ocupamos mediapipe para recortar imagenes alrededor de la mano 
 import os
 import numpy as np
 import time
@@ -18,7 +18,7 @@ os.makedirs(carpeta_validacion, exist_ok=True)
 cont_entrenamiento = 0
 cont_validacion = 0
 total_datos = 300  
-porcentaje_validacion = 0.2  #para validación
+porcentaje_validacion = 0.2  #para validacion reducir a 0.1 si ya tenia previo archivos si no dejalo asi
 padding_bbox = 30
 
 
@@ -34,7 +34,7 @@ hands = mp_hands.Hands(
     min_detection_confidence=0.7,
     min_tracking_confidence=0.5
 )
-#mp_drawing = mp.solutions.drawing_utils # si se quiere dibujar los ladnmarks
+#mp_drawing = mp.solutions.drawing_utils  si se quiere dibujar los ladnmarks
 last_capture_time = time.time()
 
 
@@ -109,8 +109,7 @@ try:
         # Mostrar el frame con las anotaciones
         cv2.imshow("Captura de Imagenes para CNN", frame)
 
-        # --- Salida ---
-        # Esperar tecla, salir con ESC (código 27)
+        # Esperar tecla, salir con ESC numeros asci creo 7
         if cv2.waitKey(5) & 0xFF == 27:
             print("(!) Captura interrumpida por el usuario.")
             break
