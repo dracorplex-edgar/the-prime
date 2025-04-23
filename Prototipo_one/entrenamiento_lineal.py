@@ -65,19 +65,32 @@ class_weights = compute_class_weight('balanced',
                                    y=np.argmax(y_train, axis=1))
 class_weights = dict(enumerate(class_weights))
 
-# Modelo , considerar agregar cosas 
+# Modelo , considerar agregar cosas subir o reducir neuronas aun no por que la primera capa es donde mayor neuronas se ocupan 
+#al normalizar datos (traslacion + escala), obtenemos un vector de 63 features (21 landmarks × 3 coordenadas cada uno)
+# el por que de irregular con los datos es por que recomendacion multiplo de 2 para las neuronas
 def crear_modelo():
     model = Sequential([
         Dense(128, activation='relu', input_shape=INPUT_SHAPE),
+        #la primera seria por el 63*2 seria un punto intermedio para probar aumentar si el entrenamiento se debe modificar
         BatchNormalization(),
         Dropout(0.5),
         Dense(64, activation='relu', kernel_regularizer='l2'),
+        #la segunda se reduce para que capte las carateristicas mas importantes
         BatchNormalization(),
         Dropout(0.3),
         Dense(32, activation='relu'),
+        #se reduce otro 50% de neuronas 
         Dense(NUM_CLASSES, activation='softmax')
+        #capa de salida igual al numero de clases o categorias 
     ])
+    #sofmax para clasificar categorias
+    # ReLU(x)=max(0,x)
+
+    #Si x≥0: Devuelve x.
+
+    #Si x<0: Devuelve 0.
     
+    #ejemplo es para valores positivos 1 y negativos 0 es algo lineal 
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),# modificar y probar diferentes learning_rate valor predeterminado 0.001
         loss='categorical_crossentropy',
