@@ -154,17 +154,16 @@ class CameraApp(QWidget):
                 if confidence > 0.8:
                     class_name = self.class_map.get(np.argmax(prediction), "Desconocido")
                     current_prediction = f"{class_name} ({confidence*100:.1f}%)"
-                    
-                    # Lógica para agregar texto después de 1.5 segundos
-                    if current_prediction == self.last_predicted_class:
+                    lpre=f"{class_name[0].upper()} "
+                    if lpre == self.last_predicted_class:
                         if time.time() - self.start_time >= 1.5:
                             self.text_edit.insertPlainText(class_name[0].upper())
                             self.start_time = time.time()
                     else:
                         self.start_time = time.time()
-                        self.last_predicted_class = current_prediction
+                        self.last_predicted_class = lpre
         
-        # Mostrar texto de predicción
+        # texto de prediccion 
         self.prediction_label.setText(current_prediction)
         
         display_frame = frame_rgb.copy()
@@ -180,7 +179,6 @@ class CameraApp(QWidget):
             # Volver a RGB para mostrar
             #display_frame = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
         
-        # Mostrar el frame en la interfaz (en RGB)
         h, w, ch = display_frame.shape
         bytes_per_line = ch * w
         qt_image = QImage(display_frame.data, w, h, bytes_per_line, QImage.Format_RGB888)
