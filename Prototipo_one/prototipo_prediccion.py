@@ -15,7 +15,6 @@ BASE_DIR = 'proyecto/src/Prototipo_one/modelo' # directorio base
 MODEL_PATH = os.path.join(BASE_DIR, 'modelo_gestos_landmarks.keras')
 CLASS_INDICES_PATH = os.path.join(BASE_DIR, 'class_indices.json')
 
-
 #normalizacion , se cambia cuando el metodo de normarlizacion en la captura lo cambias
 def preprocess_landmarks(hand_landmarks, image_shape):
     """
