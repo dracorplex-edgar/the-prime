@@ -11,6 +11,10 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QTextEdit, QLabe
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal # Import pyqtSignal for potential future use
 
+# Desactivar GPU si no se necesita
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
 WRIST = 0
 MIDDLE_FINGER_MCP = 9 # Metacarpophalangeal joint of the middle finger
 
@@ -105,10 +109,10 @@ class CameraApp(QWidget):
              # sys.exit(1)
 
         print("Configurando cámara...")
-        # Probar diferentes backends si el default no funciona bien
-        # self.cap = cv2.VideoCapture(0, cv2.CAP_DSHOW) # Windows
-        # self.cap = cv2.VideoCapture(0, cv2.CAP_V4L2)  # Linux
-        self.cap = cv2.VideoCapture(0) # Default
+        if sys.platform == 'win32':
+            self.cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+        else:
+            self.cap = cv2.VideoCapture(0, cv2.CAP_V4L2)
 
         if not self.cap.isOpened():
             print("Error: No se pudo abrir la cámara.")
