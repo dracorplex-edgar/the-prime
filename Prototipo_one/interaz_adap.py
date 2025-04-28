@@ -46,8 +46,14 @@ def preprocess_landmarks(hand_landmarks):
     return landmarks_normalized.flatten()
 
 
-os.environ['QT_QPA_PLATFORM'] = 'xcb'
-os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = '/path/to/your/qt/plugins'
+
+# Configuración condicional de Qt
+if sys.platform.startswith('linux'):
+    os.environ['QT_QPA_PLATFORM'] = 'xcb'
+    # Solo establecer el path si existe realmente
+    qt_plugin_path = '/usr/lib/x86_64-linux-gnu/qt5/plugins'  # Ruta común en Ubuntu/Debian
+    if os.path.exists(qt_plugin_path):
+        os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = qt_plugin_path
 
 class CameraApp(QWidget):
     # Opcional: Señal para emitir el gesto detectado si quieres usarlo en otro lado
